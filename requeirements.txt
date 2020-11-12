@@ -1,0 +1,20 @@
+Webpack (imports/exports)
+    Babel
+    Scss
+    Eslint
+    2 Modes
+        -Dev
+            Dev server(автоматическая перезагрузка окна браузера),
+            SourceMaps, 
+            Eslint(Служит для поддержки чистоты кода, нужен только при разработке), 
+            Not Minified & CSS ( = не оптимизировать)
+        -Prod Minified & CSS
+Git
+
+    Production
+    1.0.0
+    Development
+    1.0.2
+        -1(если отличается координально)
+        -.0(отвечают за серьезные измениения(toolbar ext...))
+        -.2(отвечают за небольшие изменения) 
