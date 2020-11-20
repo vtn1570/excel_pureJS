@@ -23,11 +23,11 @@ const jsLoaders = () => {
 const filename = ext => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`
 module.exports = {
     context: path.resolve (__dirname , 'src'),
-    mode: 'development',
+    mode:'development',
     entry: ['@babel/polyfill','./index.js'],
     output:{
         filename : filename('js'),
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
     },
     resolve:{
         extensions: ['.js'],
@@ -38,8 +38,7 @@ module.exports = {
     },
     devtool: isDev ? 'source-map' : false,
     devServer:{
-      port:3000,
-      hot:isDev,
+      port:8080,
       open:true
     },
     plugins: [
