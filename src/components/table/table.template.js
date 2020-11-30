@@ -3,30 +3,37 @@ const CODES = {
     Z: 90,
 }
 
-function createRow(infoNumber, content ) {
+function createRow(index, content ) {
+    const resizer = index
+    ? `<div class="row-resize" data-resize="row"></div>`
+    : ''
     return `
-        <div class="row">               
-            <div class="row-info">${infoNumber ? infoNumber : ''}</div>
-            <div class="row-data">${content}</div>
+        <div class="row" data-type = "resizable">               
+            <div class="row-info">
+            ${index ? index : ''}
+            ${resizer}
+            </div>
+            <div class="row-data">${content}</div> 
         </div>
     `
 }
 
-function createCol(charCode) {
+function createCol(charCode, num) {
     return `
-    <div class="column">
+    <div class="column" data-type="resizable"">
     ${charCode}
+    <div class="col-resize" data-resize="col" data-number_col = "${num}"></div>
     </div>
     `
 }
 
-function createCell() {
+function createCell(number) {
     return `
-    <div class="cell "contenteditable=""></div>
+    <div class="cell "contenteditable="" data-number_cell = "${number}"></div>
     `
 }
 
-export function createTable(rowsCount = 100) {
+export function createTable(rowsCount = 30) {
     const colsCount = CODES.Z - CODES.A
     const rows = []
     const cols = []
@@ -35,13 +42,14 @@ export function createTable(rowsCount = 100) {
 // create cells
 
     for (let i = 0; i <= colsCount; i++) {
-        cells.push(createCell())
+        cells.push(createCell(i))
     }
 
 // create columns
 
     for ( let i = 0; i <= colsCount; i++) {
-        cols.push(createCol(String.fromCharCode(65+i)))
+        // DEBUG
+        cols.push(createCol(String.fromCharCode(65+i), i))
     }
 
 // create row

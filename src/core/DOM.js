@@ -28,8 +28,26 @@ class Dom {
         this.$el.removeEventListener(eventType, callback)
     }
 
-    // node - элемент в JS
+    closest(element) {
+        return $(this.$el.closest(element))
+    }
 
+    findAll(selector) {
+        return this.$el.querySelectorAll(selector)
+    }
+
+    getCoords() {
+        return this.$el.getBoundingClientRect()
+    }
+
+    css(styles = {}) {
+        Object
+            .keys(styles)
+            .forEach((key) => {
+            this.$el.style[key] = styles[key]
+        })
+    }
+    // node - элемент в JS
     append(node) {
         if (node instanceof Dom) {
             node = node.$el
@@ -41,14 +59,15 @@ class Dom {
       }
       return this
     }
-}
 
-// $('div').html('<h1>Test</h1>').clear()
+    get data() {
+        return this.$el.dataset
+    }
+}
 
 export function $(selector) {
     return new Dom(selector)
 }
-
 
 $.create = (tagName, classes = '') => {
     const el = document.createElement(tagName)
