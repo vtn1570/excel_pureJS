@@ -27,38 +27,40 @@ function createCol(charCode, num) {
     `
 }
 
-function createCell(number) {
-    return `
-    <div class="cell "contenteditable="" data-number_cell = "${number}"></div>
+function createCell(row) {
+    return (_, num) => `
+    <div
+        class="cell" 
+        contenteditable 
+        data-number_cell = "${num}" 
+        data-id= "${row}:${num}"
+        data-type = "cell"
+    ></div>
     `
 }
 
-export function createTable(rowsCount = 30) {
+export function createTable(rowsCount = 0) {
     const colsCount = CODES.Z - CODES.A
     const rows = []
     const cols = []
-    const cells = []
-
-// create cells
-
-    for (let i = 0; i <= colsCount; i++) {
-        cells.push(createCell(i))
-    }
 
 // create columns
 
     for ( let i = 0; i <= colsCount; i++) {
-        // DEBUG
         cols.push(createCol(String.fromCharCode(65+i), i))
     }
 
 // create row
 
     rows.push(createRow(null, cols.join('')))
-    for ( let i = 0; i < rowsCount; i++ ) {
-        rows.push(createRow( i+1, cells.join('')))
-    }
 
+    for ( let row = 0; row < rowsCount; row++ ) {
+        const cells = new Array(colsCount)
+        .fill('')
+        // .map((_, col) => creareCell(row, col))
+        .map(createCell(row))
+        .join('')
+        rows.push(createRow( row+1, cells))
+    }
     return rows.join('')
 }
-

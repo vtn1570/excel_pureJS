@@ -4,10 +4,11 @@ export class Formula extends ExcelComponent {
     // static- получение доступа без создания инстанса класса
     static className = 'excel__formula'
 
-    constructor($root) {
+    constructor($root, options) {
         super($root, {
             name: 'Formula',
-            listeners: ['input', 'click'],
+            listeners: ['input', 'keydown'],
+            ...options,
         })
     }
 
@@ -18,12 +19,25 @@ export class Formula extends ExcelComponent {
         `
     }
 
-    onInput(event) {
-        console.log(this.$root)
-        console.log('Formula: onInput', event.target.textContent.trim())
+    init() {
+        super.init()
+
+        this.$formula = this.$root.find('.input')
+        this.$on('table:select', ($cell) => {
+            this.$formula.text($cell.text())
+        })
     }
 
-    onClick(event) {
-        console.log(event)
+    onInput(event) {
+        const text = event.target.textContent.trim()
+        this.$emit('it is working', text)
+    }
+
+    onKeydown(event) {
+        const keys = ['Enter', 'Tab']
+        if (keys.includes(event.key)) {
+            event.preventDefault()
+            this.$emit('formula: done')
+        }
     }
 }

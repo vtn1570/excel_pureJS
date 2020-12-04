@@ -13,6 +13,14 @@ class Dom {
          return this.$el.outerHTML.trim()
     }
 
+    text(text) {
+        if (typeof text === 'string') {
+        this.$el.textContent = text
+        this
+        }
+        return this.$el.textContent
+    }
+
     clear() {
         this.html('')
         return this
@@ -36,8 +44,26 @@ class Dom {
         return this.$el.querySelectorAll(selector)
     }
 
+    find(selector) {
+        return $(this.$el.querySelector(selector))
+    }
+
+    focus() {
+        this.$el.focus()
+        return this
+    }
+
     getCoords() {
         return this.$el.getBoundingClientRect()
+    }
+
+    addClass(className) {
+        this.$el.classList.add(className)
+        return this
+    }
+
+    removeClass(className) {
+        this.$el.classList.remove(className)
     }
 
     css(styles = {}) {
@@ -47,17 +73,22 @@ class Dom {
             this.$el.style[key] = styles[key]
         })
     }
-    // node - элемент в JS
-    append(node) {
-        if (node instanceof Dom) {
-            node = node.$el
+
+    id(parse) {
+        if (parse) {
+            const parsed = this.id().split(":")
+            return {
+                row: +parsed[0],
+                col: +parsed[1],
+            }
         }
-      if (Element.prototype.append) {
-          this.$el.append(node)
-      } else {
-          this.$el.appendChild(node)
-      }
-      return this
+        return this.data.id
+    }
+    // node - элемент в JS
+    // мини polifyll
+    append(node) {
+        this.$el.append(node.$el) // новый метод
+        return this
     }
 
     get data() {
