@@ -4,6 +4,12 @@ export class Header extends ExcelComponent {
     // static- получение доступа без создания инстанса класса
     static className = 'excel__header'
 
+    constructor($root, options) {
+        super($root, {
+            name: 'Header',
+            ...options,
+        })
+    }
 
     toHTML() {
         return `
