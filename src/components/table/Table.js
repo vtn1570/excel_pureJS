@@ -1,10 +1,14 @@
 import {ExcelComponent} from '@core/ExcelComponent'
 import {$} from '../../core/DOM'
 import {matrix, nextSelector} from './table.functions'
-import {resizeHandler} from './resizeHandler'
+import {resizeHandler} from './table.resize'
 import {isCell, shoulResize} from './table.functions'
 import {createTable} from './table.template'
 import {TableSelection} from './TableSelection'
+import {changeText} from '@/redux/actions'
+import {defaultStyles} from '../../../constants'
+import {applyStyle, changeStyles} from '../../redux/actions'
+import {parse} from '../../core/parse'
 
 export class Table extends ExcelComponent {
     // static- получение доступа без создания инстанса класса
@@ -13,13 +17,13 @@ export class Table extends ExcelComponent {
         constructor($root, options) {
             super($root, {
                 name: 'Table',
-                listeners: ['mousedown', 'keydown'],
+                listeners: ['mousedown', 'keydown', 'input'],
                 ...options,
             })
         }
 
     toHTML() {
-        return createTable(20)
+        return createTable(20, this.store.getState())
     }
 
     prepare() {
@@ -28,22 +32,47 @@ export class Table extends ExcelComponent {
 
     init() {
         super.init()
-        const $cell = this.$root.find('[data-id="0:0"]')
-        this.selection.select($cell)
+        this.selectCell(this.$root.find('[data-id="0:0"]'))
 
-        this.$on('it is working', (text) => {
-            this.selection.current.text(text)
-            console.log('formula: input', text)
+        this.$on('formula: input', (value) => {
+            this.selection.current
+                .attr('data-value', value)
+                .text(parse(value))
+            this.updateTextInStore(value)
         })
         this.$on('formula: done', () => {
             this.selection.current.focus()
         })
+
+        this.$on('toolbar:applyStyle', (value) => {
+            this.selection.applyStyle(value)
+            this.$dispatch(applyStyle({
+                value,
+                ids: this.selection.selectedIds,
+            }))
+        })
+    }
+
+    selectCell($cell) {
+        this.selection.select($cell)
         this.$emit('table:select', $cell)
+        const styles = $cell.getStyles(Object.keys(defaultStyles))
+        console.log('styles to dispatch', styles)
+        this.$dispatch(changeStyles(styles))
+    }
+
+    async resizeTable(event) {
+            const data = await resizeHandler(this.$root, event)
+            if (data.type === 'col') {
+                this.$dispatch({type: 'COL_RESIZE', data})
+            } else {
+                this.$dispatch({type: 'ROW_RESIZE', data})
+            }
     }
 
     onMousedown(event) {
         if (shoulResize(event)) {
-            resizeHandler(this.$root, event)
+            this.resizeTable(event)
         } else if (isCell(event)) {
             const $target = $(event.target)
             if (event.shiftKey) {
@@ -51,7 +80,7 @@ export class Table extends ExcelComponent {
                     .map((el) => this.$root.find(`[data-id="${el}"]`))
                 this.selection.selectGroup(cells)
             } else {
-                this.selection.select($target)
+                this.selectCell($target)
             }
         }
     }
@@ -70,9 +99,19 @@ export class Table extends ExcelComponent {
             event.preventDefault()
             const id = this.selection.current.id(true)
             const $next = this.$root.find(nextSelector(key, id))
-            this.selection.select($next)
-            this.$emit('table:select', $next)
+            this.selectCell($next)
         }
+    }
+
+    updateTextInStore(value) {
+        this.$dispatch(changeText({
+            id: this.selection.current.id(),
+            value,
+        }))
+    }
+
+    onInput(event) {
+        this.updateTextInStore($(event.target).text())
     }
 }
 
