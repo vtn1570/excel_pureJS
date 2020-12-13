@@ -1,4 +1,4 @@
-import {$} from '@core/DOM.js'
+import {$} from '@core/DOM'
 import {Emitter} from '../../core/Emitter'
 import {StoreSubscriber} from '../../core/StoreSubscriber'
 
