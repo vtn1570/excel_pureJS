@@ -102,7 +102,6 @@ class Dom {
     // node - элемент в JS
 
     append(node) {
-        debugger
         this.$el.append(node.$el) // новый метод
         return this
     }

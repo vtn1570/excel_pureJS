@@ -5,23 +5,37 @@ import {Formula} from '@/components/formula/Formula'
 import {Table} from '@/components/table/Table'
 import {createStore} from '@core/createStore'
 import {storage} from '@core/utils'
-import {initialState} from '@/redux/initialState'
 import {Page} from "../core/Page";
+import {normalizeInitialState} from '../redux/initialState'
+
+function storageName(param) {
+    return 'excel:' + param
+}
 
 export class ExcelPage extends Page {
     getRoot() {
-        const store = createStore(initialState)
+        const params = this.params ? this.params : Date.now().toString()
+
+        const state = storage(storageName(params))
+        const store = createStore(normalizeInitialState(state))
 
         store.subscribe((state) => {
-        console.log('app state:', state)
-        storage('excel-state', state)
+        storage(storageName(params), state)
         })
 
-        const excel = new Excel('#app', {
+        this.excel = new Excel({
         components: [Header, Toolbar, Formula, Table],
         store,
         })
 
-        return excel.render()
+        return this.excel.getRoot()
+    }
+
+    afterRender() {
+        this.excel.init()
+    }
+
+    destroy() {
+        this.excel.destroy()
     }
 }

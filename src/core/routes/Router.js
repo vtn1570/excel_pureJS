@@ -1,4 +1,5 @@
 import {$} from '@core/dom'
+import {ActiveRoute} from './ActiveRoute'
 // import {ActiveRoute} from './ActiveRoute'
 
 export class Router {
@@ -8,18 +9,33 @@ export class Router {
         }
         this.$placeholder = $(selector)
         this.routes = routes
-        // this.changePageHandler = this.changePageHandler.bind(this)
         this.init()
+        this.changePageHandler = this.changePageHandler.bind(this)
+        this.page = null
     }
     init() {
         window.addEventListener('hashchange', this.changePageHandler)
         this.changePageHandler()
     }
 
-    changePageHandler() {
-        const Page = this.routes.excel
-        const page = new Page()
-        this.$placeholder.append(page.getRoot())
+    changePageHandler(event) {
+        event ? document.location.reload() : ''
+        if (this.page) {
+            this.page.destroy()
+        }
+        // document.location.reload();
+
+        this.$placeholder.clear()
+
+        const Page = ActiveRoute.path.includes('excel')
+        ? this.routes.excel
+        : this.routes.dashboard
+
+        this.page = new Page(ActiveRoute.param)
+
+        this.$placeholder.append(this.page.getRoot())
+
+        this.page.afterRender()
     }
 
     destroy() {
