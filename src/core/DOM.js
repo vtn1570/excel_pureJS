@@ -7,7 +7,7 @@ class Dom {
 
     html(html) {
          if (typeof html === 'string') {
-             this.$el.innerHTML = html
+             this.$el.innerHTML = html // innerHTML - переписывает содержимое
              return this // используется для chain
          }
          return this.$el.outerHTML.trim()
@@ -100,7 +100,7 @@ class Dom {
         return this.data.id
     }
     // node - элемент в JS
-    // мини polifyll
+
     append(node) {
         this.$el.append(node.$el) // новый метод
         return this
